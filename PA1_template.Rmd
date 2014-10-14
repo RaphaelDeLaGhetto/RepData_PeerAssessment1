@@ -62,19 +62,48 @@ This subject takes an **average of `r meanSteps`** steps daily with a **median v
 The average number of steps taken during each five minute interval across all
 days is calculated.
 
-```{r timeSeries}
 averageSteps <- tapply(data$steps, data$interval, mean, na.rm=TRUE)
 plot(dimnames(averageSteps)[[1]], averageSteps, type='l', ylab='Average Steps',
     xlab='5 Minute Interval',
     main='Average number of steps taken at each 5 minute interval')
 maxInterval <-dimnames(averageSteps)[[1]][averageSteps==max(averageSteps)]
+
+averageSteps <- data.frame(interval=names(averageSteps), steps=averageSteps)
+
+```{r timeSeries}
+averageSteps <- tapply(data$steps, data$interval, mean, na.rm=TRUE)
+plot(names(averageSteps), averageSteps, type='l', ylab='Average Steps',
+    xlab='5 Minute Interval',
+    main='Average number of steps taken at each 5 minute interval')
+averageSteps <- data.frame(interval=names(averageSteps), steps=averageSteps)
+maxInterval <- averageSteps[averageSteps$steps==max(averageSteps$steps), 'interval']
 ```
 
-On average, this subject takes the greatest number of steps at the
-**`r maxInterval` interval**.
-
+On average, this subject takes the greatest number of steps at
+**interval `r maxInterval`**.
 
 ## Imputing missing values
+
+Identify missing values in the dataset.
+
+```{r missingValues}
+isMissing <- is.na(data$steps)
+missingCount <- length(isMissing[isMissing==TRUE])
+```
+
+There are a total of **`r missingCount`** missing values in this dataset.
+
+Using the averages collected for each daily interval, fill in the missing values:
+
+```{r imputedData}
+imputedData <- merge(data, averageSteps, by.x='interval', by.y='interval')
+imputedData$steps.x[is.na(imputedData$steps.x)] <- imputedData$steps.y[is.na(imputedData$steps.x)]
+imputedTotalSteps <- tapply(imputedData$steps.x, imputedData$date, sum)
+hist(imputedTotalSteps, xlab='Steps Taken',
+    main='Frequency of total steps taken daily, October-November 2012');
+meanSteps <- mean(imputedTotalSteps, na.rm=FALSE)
+medianSteps <- median(totalSteps, na.rm=FALSE)
+```
 
 
 
