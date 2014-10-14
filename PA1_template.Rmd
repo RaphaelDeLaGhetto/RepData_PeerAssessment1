@@ -5,17 +5,73 @@ output:
     keep_md: true
 ---
 
+Reproducible Research: Peer Assessment 1
+========================================
+
+This is the first of two project submissions for Coursera's Reproducible
+Reasearch course. Its intent is to produce a literate statistical analysis on
+data collected from a personal activity monitoring device. The data upon which
+this analysis is performed was obtained by forking the project repository
+on 2014-10-14.
 
 ## Loading and preprocessing the data
 
+The data provided from the original repository was zipped. Unzip the data if
+it has not been unzipped already (also, turn off scientific notation when
+outputing values):
 
+```{r unzip}
+if (!is.element('activity.csv', dir())) {
+    unzip('activity.zip')
+}
+options(scipen = 1, digits = 2)
+```
+
+Load the data contained in `activity.csv`:
+
+```{r loadData}
+data <- read.csv('activity.csv')
+```
+
+Since most of the inquiry pertains to daily activty, the `data` column is
+converted to `R` `Date` objects:
+
+```{r convertToDate}
+data$date <- as.Date(data$date)
+```
 
 ## What is mean total number of steps taken per day?
 
+The total number of steps taken each day is determined. These values are used
+to plot a histogram marking their frequency and to calculate their mean and
+median:
 
+```{r sumSteps}
+totalSteps <- tapply(data$steps, data$date, sum)
+hist(totalSteps, xlab='Steps Taken', ylim=c(0,30), 
+    main='Frequency of total steps taken daily, October-November 2012');
+meanSteps <- mean(totalSteps, na.rm=TRUE)
+medianSteps <- median(totalSteps, na.rm=TRUE)
+```
+
+This subject takes an **average of `r meanSteps`** steps daily with a **median value of
+`r medianSteps`**.
 
 ## What is the average daily activity pattern?
 
+The average number of steps taken during each five minute interval across all
+days is calculated.
+
+```{r timeSeries}
+averageSteps <- tapply(data$steps, data$interval, mean, na.rm=TRUE)
+plot(dimnames(averageSteps)[[1]], averageSteps, type='l', ylab='Average Steps',
+    xlab='5 Minute Interval',
+    main='Average number of steps taken at each 5 minute interval')
+maxInterval <-dimnames(averageSteps)[[1]][averageSteps==max(averageSteps)]
+```
+
+On average, this subject takes the greatest number of steps at the
+**`r maxInterval` interval**.
 
 
 ## Imputing missing values
