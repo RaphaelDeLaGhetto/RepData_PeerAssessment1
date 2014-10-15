@@ -11,7 +11,7 @@ Reproducible Research: Peer Assessment 1
 This is the first of two project submissions for Coursera's Reproducible
 Reasearch course. Its intent is to produce a literate statistical analysis on
 data collected from a personal activity monitoring device. The data upon which
-this analysis is performed was obtained by forking the project repository
+this analysis is performed was obtained by forking the course repository
 on 2014-10-14.
 
 ## Loading and preprocessing the data
@@ -45,7 +45,7 @@ data$date <- as.Date(data$date)
 
 ## What is mean total number of steps taken per day?
 
-The total number of steps taken each day is determined. These values are used
+Determine the total number of steps taken each day. These values are used
 to plot a histogram marking their frequency and to calculate their mean and
 median:
 
@@ -130,7 +130,7 @@ data in this case has no signficant impact on the daily step count estimate.
 ## Are there differences in activity patterns between weekdays and weekends?
 
 Add a column to the imputed data frame and classify each row as occuring on a 
-by *Weekend* or *Weekday*. Split the results on the same factor values:
+*Weekend* or *Weekday*. Split the results on the same factor values:
 
 
 ```r
@@ -140,27 +140,28 @@ imputedData$day <- as.factor(
 imputedData <- split(imputedData, imputedData$day)
 ```
 
-Plot the steps taken on the weekend alongside those taken on the weekdays in 
-five minute intervals:
+Plot the average steps taken on the weekend alongside those taken on the
+weekdays in five minute intervals:
 
 
 ```r
 par(mfrow=c(2,1))
-averageWeekdaySteps =
+averageWeekdaySteps <-
     tapply(imputedData$Weekday$steps.x, imputedData$Weekday$interval, mean)
 plot(names(averageWeekdaySteps), averageWeekdaySteps, type='l',
     ylab='Average Steps', xlab='5 Minute Intervals',
     main='Average number of steps taken at each 5 minute interval\non weekdays')
 
-averageWeekendSteps =
+averageWeekendStepsa <- 
     tapply(imputedData$Weekend$steps.x, imputedData$Weekend$interval, mean)
 plot(names(averageWeekendSteps), averageWeekendSteps, type='l',
     ylab='Average Steps', xlab='5 Minute Intervals',
-    main='Average number of steps taken at each 5 minute interval\non the weekend')
+    main='Average number of steps taken at each 5 minute interval\non weekends')
 ```
 
 ![plot of chunk weekdayPlot](figure/weekdayPlot-1.png) 
 
-These graphs suggest that the subject takes more steps on the weekend than
-during weekdays.
+These plots suggest that the subject takes more steps on the weekend than
+during weekdays, and that activity is sustained for longer periods. They also
+suggest that the subject may like to sleep in a bit.
 
