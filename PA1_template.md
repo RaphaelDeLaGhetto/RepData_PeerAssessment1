@@ -35,7 +35,7 @@ Load the data contained in `activity.csv`:
 data <- read.csv('activity.csv')
 ```
 
-Since most of the inquiry pertains to daily activty, the `data` column is
+Since most of the inquiry pertains to daily activity, the `data` column is
 converted to `R` `Date` objects:
 
 
@@ -69,7 +69,7 @@ This subject takes an **average of 10766.19** steps daily with a **median value 
 ## What is the average daily activity pattern?
 
 The average number of steps taken during each five minute interval across all
-days is calculated.
+days is calculated:
 
 
 ```r
@@ -91,7 +91,7 @@ On average, this subject takes the greatest number of steps at
 
 ## Imputing missing values
 
-Identify missing values in the dataset.
+Identify missing values in the dataset:
 
 
 ```r
@@ -127,6 +127,40 @@ average calculation. The median value differs by
 1.19, which is negligible. Imputing missing
 data in this case has no signficant impact on the daily step count estimate.
 
-
-
 ## Are there differences in activity patterns between weekdays and weekends?
+
+Add a column to the imputed data frame and classify each row as occuring on a 
+by *Weekend* or *Weekday*. Split the results on the same factor values:
+
+
+```r
+imputedData$day <- as.factor(
+    ifelse(weekdays(imputedData$date) %in% c('Saturday', 'Sunday'),
+    'Weekend', 'Weekday'))
+imputedData <- split(imputedData, imputedData$day)
+```
+
+Plot the steps taken on the weekend alongside those taken on the weekdays in 
+five minute intervals:
+
+
+```r
+par(mfrow=c(2,1))
+averageWeekdaySteps =
+    tapply(imputedData$Weekday$steps.x, imputedData$Weekday$interval, mean)
+plot(names(averageWeekdaySteps), averageWeekdaySteps, type='l',
+    ylab='Average Steps', xlab='5 Minute Intervals',
+    main='Average number of steps taken at each 5 minute interval\non weekdays')
+
+averageWeekendSteps =
+    tapply(imputedData$Weekend$steps.x, imputedData$Weekend$interval, mean)
+plot(names(averageWeekendSteps), averageWeekendSteps, type='l',
+    ylab='Average Steps', xlab='5 Minute Intervals',
+    main='Average number of steps taken at each 5 minute interval\non the weekend')
+```
+
+![plot of chunk weekdayPlot](figure/weekdayPlot-1.png) 
+
+These graphs suggest that the subject takes more steps on the weekend than
+during weekdays.
+
