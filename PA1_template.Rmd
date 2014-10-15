@@ -33,7 +33,7 @@ Load the data contained in `activity.csv`:
 data <- read.csv('activity.csv')
 ```
 
-Since most of the inquiry pertains to daily activty, the `data` column is
+Since most of the inquiry pertains to daily activity, the `data` column is
 converted to `R` `Date` objects:
 
 ```{r convertToDate}
@@ -60,15 +60,7 @@ This subject takes an **average of `r meanSteps`** steps daily with a **median v
 ## What is the average daily activity pattern?
 
 The average number of steps taken during each five minute interval across all
-days is calculated.
-
-averageSteps <- tapply(data$steps, data$interval, mean, na.rm=TRUE)
-plot(dimnames(averageSteps)[[1]], averageSteps, type='l', ylab='Average Steps',
-    xlab='5 Minute Interval',
-    main='Average number of steps taken at each 5 minute interval')
-maxInterval <-dimnames(averageSteps)[[1]][averageSteps==max(averageSteps)]
-
-averageSteps <- data.frame(interval=names(averageSteps), steps=averageSteps)
+days is calculated:
 
 ```{r timeSeries}
 averageSteps <- tapply(data$steps, data$interval, mean, na.rm=TRUE)
@@ -84,7 +76,7 @@ On average, this subject takes the greatest number of steps at
 
 ## Imputing missing values
 
-Identify missing values in the dataset.
+Identify missing values in the dataset:
 
 ```{r missingValues}
 isMissing <- is.na(data$steps)
@@ -97,14 +89,22 @@ Using the averages collected for each daily interval, fill in the missing values
 
 ```{r imputedData}
 imputedData <- merge(data, averageSteps, by.x='interval', by.y='interval')
-imputedData$steps.x[is.na(imputedData$steps.x)] <- imputedData$steps.y[is.na(imputedData$steps.x)]
+imputedData$steps.x[is.na(imputedData$steps.x)] <-
+    imputedData$steps.y[is.na(imputedData$steps.x)]
 imputedTotalSteps <- tapply(imputedData$steps.x, imputedData$date, sum)
 hist(imputedTotalSteps, xlab='Steps Taken',
     main='Frequency of total steps taken daily, October-November 2012');
-meanSteps <- mean(imputedTotalSteps, na.rm=FALSE)
-medianSteps <- median(totalSteps, na.rm=FALSE)
+meanAdjustedSteps <- mean(imputedTotalSteps, na.rm=FALSE)
+medianAdjustedSteps <- median(imputedTotalSteps, na.rm=FALSE)
 ```
 
-
+According to the imputed data, this subject takes an **average of
+`r meanAdjustedSteps`** steps daily with a **median value of
+`r medianAdjustedSteps`**. This average value is identical to the original
+average calculation. The median value differs by
+`r medianAdjustedSteps - medianSteps`, which is negligible. Imputing missing
+data in this case has no signficant impact on the daily step count estimate.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+
